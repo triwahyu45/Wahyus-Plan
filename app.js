@@ -1,10 +1,11 @@
 /* ==========================================================================
-   Wahyu's Plan — Notion Style Application Logic with Google Auth Security
+   Wahyu's Plan — Notion Style Application Logic with Private Login Gate
    ========================================================================== */
 
 const STORAGE_KEY_TASKS = "wahyu_plan_tasks_v1";
 const STORAGE_KEY_NOTES = "wahyu_plan_notes_v1";
 const STORAGE_KEY_THEME = "wahyu_plan_theme_v1";
+const STORAGE_KEY_AUTH = "wahyu_plan_user_email";
 
 const TARGET_EMAIL = "handoyotriwahyu@gmail.com";
 
@@ -113,6 +114,31 @@ const DEFAULT_TASKS = [
 
 const DEFAULT_NOTES = [
     {
+        id: "note_capstone_summary",
+        icon: "🎓",
+        title: "Jurnal Pembelajaran Capstone & Portfolio Skill",
+        content: `<h1>Jurnal Pembelajaran Capstone & Experiential Learning Kak Wahyu</h1>
+<p>Rangkuman domain keahlian dan proyek yang telah diselesaikan selama perkuliahan dan riset mandiri:</p>
+
+<h2>1. Embedded Robotics & Hardware Control</h2>
+<ul>
+  <li><strong>Robot Transporter Technocorner 2026:</strong> Implementasi sistem mikrokontroler STM32/ESP32, sensor IMU 9-axis, rotary encoder high resolution, dan motor driver MOSFET.</li>
+  <li><strong>Kinematika Robot Omni:</strong> Pemrograman matriks pergerakan roda omni-directional untuk manuver cepat dan presisi di arena perlombaan.</li>
+</ul>
+
+<h2>2. Telemetry, CDP WebSocket & Automation</h2>
+<ul>
+  <li><strong>Chrome DevTools Protocol (CDP) Bridge:</strong> Komunikasi tingkat rendah berbasis WebSocket tanpa dependensi Selenium/Puppeteer.</li>
+  <li><strong>Telegram Mirroring Bot:</strong> Notifikasi real-time ke perangkat HP untuk kontrol jarak jauh dan pemantauan status tugas.</li>
+</ul>
+
+<h2>3. Administrasi Akademik & Ekuivalensi RPL</h2>
+<ul>
+  <li><strong>Konversi Matakuliah SKS:</strong> Penyusunan berkas ekuivalensi prestasi Lomba Esai UNTAN 2025 (Vokasional), INESCO UMP 2025 (Ergonomi), dan PANCO FISIP UNY 2025 (AI).</li>
+  <li><strong>Pengelolaan Berkas DHS/KHS:</strong> Kompresi & penataan 12+ berkas PDF sesuai standar ukuran portal PDPT UNY (&lt; 1000 KB).</li>
+</ul>`
+    },
+    {
         id: "note_rpl_links",
         icon: "🔗",
         title: "Daftar Link Dokumentasi Instagram Prestasi Lomba",
@@ -152,15 +178,6 @@ const DEFAULT_NOTES = [
   </li>
 </ol>
 <p>Status: Laporan Kegiatan, Surat Tugas, Sertifikat, dan Dokumen Pendukung lainnya sudah 100% lengkap dan siap upload.</p>`
-    },
-    {
-        id: "note_technocorner_specs",
-        icon: "🤖",
-        title: "Robot Transporter Technocorner UGM 2026",
-        content: `<h1>Sertifikat Technocorner UGM 2026</h1>
-<p>Tri Wahyu Handoyo berpartisipasi pada cabang lomba <strong>Transporter</strong> dalam kegiatan Technocorner 2026 yang diselenggarakan pada tanggal 27 Juni 2026 oleh Keluarga Mahasiswa Teknik Elektro dan Teknologi Informasi (KMTETI) Fakultas Teknik UGM.</p>
-<blockquote>Target Selanjutnya: Input sertifikat ke sistem PEM SIAKAD UNY.</blockquote>
-<p>Arsip berkas: <code>Sertifikat\\Sertifikat Peserta Technocorner UGM 2026 Transporter - Tri Wahyu Handoyo.pdf</code></p>`
     }
 ];
 
@@ -171,7 +188,7 @@ let state = {
     currentView: "dashboard",
     activeNoteId: null,
     kanbanFilter: "all",
-    isEditable: false
+    isAuthenticated: false
 };
 
 let currentUserEmail = null;
@@ -186,7 +203,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initModals();
     initGlobalSearch();
     initImportExport();
-    renderAll();
 });
 
 // Save Data
@@ -196,44 +212,75 @@ function saveState() {
     renderAll();
 }
 
-// Google Authentication
+// Google Authentication & Private Lock Gate Logic
 function initAuth() {
-    // Check session storage for existing auth
-    const savedEmail = sessionStorage.getItem("wahyu_plan_user_email");
-    if (savedEmail) {
+    const savedEmail = sessionStorage.getItem(STORAGE_KEY_AUTH) || localStorage.getItem(STORAGE_KEY_AUTH);
+    if (savedEmail === TARGET_EMAIL) {
         currentUserEmail = savedEmail;
-        state.isEditable = (currentUserEmail === TARGET_EMAIL);
-        updateAuthUI(true);
+        showAppWorkspace(savedEmail);
     } else {
-        state.isEditable = false;
-        updateAuthUI(false);
+        showLoginGate();
     }
 
-    // Bind logout button
     document.getElementById("btn-logout")?.addEventListener("click", handleLogout);
+}
+
+function showLoginGate(errorMsg = null) {
+    state.isAuthenticated = false;
+    document.getElementById("login-gate").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+
+    const alertBox = document.getElementById("gate-error-alert");
+    if (errorMsg) {
+        alertBox.classList.remove("hidden");
+        document.getElementById("gate-error-msg").textContent = errorMsg;
+    } else {
+        alertBox.classList.add("hidden");
+    }
+}
+
+function showAppWorkspace(email, payload = null) {
+    state.isAuthenticated = true;
+    document.getElementById("login-gate").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+
+    const avatarImg = document.getElementById("user-avatar");
+    const emailSpan = document.getElementById("user-email");
+
+    if (avatarImg) {
+        avatarImg.src = payload && payload.picture ? payload.picture : "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+    }
+    if (emailSpan) {
+        emailSpan.textContent = email;
+    }
+
+    renderAll();
 }
 
 window.handleCredentialResponse = function(response) {
     try {
         const responsePayload = decodeJwtResponse(response.credential);
-        currentUserEmail = responsePayload.email;
-        sessionStorage.setItem("wahyu_plan_user_email", currentUserEmail);
-        state.isEditable = (currentUserEmail === TARGET_EMAIL);
-        
-        updateAuthUI(true, responsePayload);
-        renderAll();
+        const email = responsePayload.email;
+
+        if (email === TARGET_EMAIL) {
+            currentUserEmail = email;
+            sessionStorage.setItem(STORAGE_KEY_AUTH, email);
+            localStorage.setItem(STORAGE_KEY_AUTH, email);
+            showAppWorkspace(email, responsePayload);
+        } else {
+            showLoginGate(`Akses Ditolak! Akun ${email} tidak memiliki izin. Hanya handoyotriwahyu@gmail.com yang diizinkan.`);
+        }
     } catch (e) {
-        console.error("JWT decoding failed", e);
+        console.error("JWT decoding error:", e);
+        showLoginGate("Gagal memproses login Google. Silakan coba lagi.");
     }
 };
 
 function handleLogout() {
     currentUserEmail = null;
-    sessionStorage.removeItem("wahyu_plan_user_email");
-    state.isEditable = false;
-    
-    updateAuthUI(false);
-    renderAll();
+    sessionStorage.removeItem(STORAGE_KEY_AUTH);
+    localStorage.removeItem(STORAGE_KEY_AUTH);
+    showLoginGate();
 }
 
 function decodeJwtResponse(token) {
@@ -244,76 +291,6 @@ function decodeJwtResponse(token) {
     }).join(''));
 
     return JSON.parse(jsonPayload);
-}
-
-function updateAuthUI(isLoggedIn, payload = null) {
-    const lockBadge = document.getElementById("lock-badge");
-    const googleBtn = document.getElementById("googleSignInBtn");
-    const profileDiv = document.getElementById("user-profile");
-    
-    if (isLoggedIn) {
-        googleBtn?.classList.add("hidden");
-        profileDiv?.classList.remove("hidden");
-        if (payload) {
-            document.getElementById("user-avatar").src = payload.picture;
-            document.getElementById("user-email").textContent = payload.email;
-        } else {
-            document.getElementById("user-avatar").src = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
-            document.getElementById("user-email").textContent = currentUserEmail;
-        }
-        
-        if (state.isEditable) {
-            lockBadge.className = "badge-lock editable";
-            lockBadge.innerHTML = '<i class="fa-solid fa-unlock"></i> Mode Edit';
-            document.body.classList.remove("readonly-mode");
-        } else {
-            lockBadge.className = "badge-lock read-only";
-            lockBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Mode Baca (${currentUserEmail.split('@')[0]})`;
-            document.body.classList.add("readonly-mode");
-        }
-    } else {
-        googleBtn?.classList.remove("hidden");
-        profileDiv?.classList.add("hidden");
-        lockBadge.className = "badge-lock read-only";
-        lockBadge.innerHTML = '<i class="fa-solid fa-lock"></i> Mode Baca';
-        document.body.classList.add("readonly-mode");
-    }
-}
-
-// UI Readonly States Updater
-function updateGlobalReadonlyUI() {
-    const isEdit = state.isEditable;
-    
-    const quickCreateBtn = document.getElementById("quickCreateTaskBtn");
-    const addFolderBtn = document.getElementById("addFolderBtn");
-    const createNewNoteBtn = document.getElementById("createNewNoteBtn");
-    const deleteCurrentNoteBtn = document.getElementById("deleteCurrentNoteBtn");
-    const editorToolbar = document.querySelector(".editor-toolbar");
-    const addTodayTaskBtn = document.getElementById("addTodayTaskBtn");
-    const exportBtn = document.getElementById("exportDataBtn");
-    const importBtn = document.getElementById("importDataBtn");
-    
-    if (isEdit) {
-        quickCreateBtn?.classList.remove("hidden");
-        if (addFolderBtn) addFolderBtn.style.display = "inline-block";
-        createNewNoteBtn?.classList.remove("hidden");
-        deleteCurrentNoteBtn?.classList.remove("hidden");
-        editorToolbar?.classList.remove("hidden");
-        addTodayTaskBtn?.classList.remove("hidden");
-        
-        document.getElementById("docTitleInput")?.removeAttribute("readonly");
-        document.getElementById("notionEditor")?.setAttribute("contenteditable", "true");
-    } else {
-        quickCreateBtn?.classList.add("hidden");
-        if (addFolderBtn) addFolderBtn.style.display = "none";
-        createNewNoteBtn?.classList.add("hidden");
-        deleteCurrentNoteBtn?.classList.add("hidden");
-        editorToolbar?.classList.add("hidden");
-        addTodayTaskBtn?.classList.add("hidden");
-        
-        document.getElementById("docTitleInput")?.setAttribute("readonly", "true");
-        document.getElementById("notionEditor")?.setAttribute("contenteditable", "false");
-    }
 }
 
 // Theme Handling
@@ -374,11 +351,11 @@ function switchView(viewName) {
         dashboard: "Dashboard",
         kanban: "Kanban Board Plan",
         notes: "Notes & Docs (Notion Style)",
-        today: "Hari Ini & Focus List"
+        today: "Hari Ini & Focus List",
+        capstone: "Capstone & Learning Investment"
     };
     document.getElementById("pageTitleHeading").textContent = titles[viewName] || "Dashboard";
     
-    // Reset mobile notes layout state when switching views
     if (viewName !== "notes") {
         document.getElementById("notesSidebar")?.classList.remove("hidden-mobile");
         document.getElementById("editorContainer")?.classList.remove("active-mobile");
@@ -387,7 +364,7 @@ function switchView(viewName) {
 
 // Render All Views
 function renderAll() {
-    updateGlobalReadonlyUI();
+    if (!state.isAuthenticated) return;
     renderStats();
     renderDashboard();
     renderKanban();
@@ -420,10 +397,9 @@ function renderDashboard() {
         return;
     }
 
-    const isEdit = state.isEditable;
     container.innerHTML = todayTasks.map(t => `
         <li class="checklist-item ${t.status === 'done' ? 'done' : ''}">
-            <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} ${isEdit ? '' : 'disabled'} onchange="toggleTaskDone('${t.id}')">
+            <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')">
             <span style="flex:1;">${escapeHtml(t.title)}</span>
             <span class="card-tag priority-${t.priority}">${t.category}</span>
         </li>
@@ -455,7 +431,6 @@ function initKanban() {
 
     document.querySelectorAll(".add-card-col-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            if (!state.isEditable) return;
             const col = btn.getAttribute("data-col");
             openTaskModal(null, col);
         });
@@ -464,19 +439,10 @@ function initKanban() {
 
 function renderKanban() {
     const cols = ["todo", "inprogress", "review", "done"];
-    const isEdit = state.isEditable;
     
     cols.forEach(colId => {
         const container = document.getElementById(`col-${colId}-container`);
-        const addColBtn = document.querySelector(`.add-card-col-btn[data-col="${colId}"]`);
-        
         if (!container) return;
-
-        // Hide/show column add button based on auth
-        if (addColBtn) {
-            if (isEdit) addColBtn.style.display = "flex";
-            else addColBtn.style.display = "none";
-        }
 
         let filtered = state.tasks.filter(t => t.status === colId);
         if (state.kanbanFilter !== "all") {
@@ -484,10 +450,6 @@ function renderKanban() {
         }
 
         document.getElementById(`count-${colId}`).textContent = filtered.length;
-
-        const deleteButtonHtml = isEdit ? 
-            (tId) => `<button class="icon-btn-sm" onclick="event.stopPropagation(); deleteTask('${tId}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>` :
-            (tId) => ``;
 
         container.innerHTML = filtered.map(t => `
             <div class="kanban-card" onclick="openTaskModal('${t.id}')">
@@ -499,7 +461,7 @@ function renderKanban() {
                 ${t.desc ? `<p style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(t.desc.substring(0, 80))}</p>` : ''}
                 <div class="card-footer">
                     <span><i class="fa-regular fa-calendar"></i> ${t.dueDate || 'No Date'}</span>
-                    ${deleteButtonHtml(t.id)}
+                    <button class="icon-btn-sm" onclick="event.stopPropagation(); deleteTask('${t.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
         `).join("");
@@ -508,18 +470,14 @@ function renderKanban() {
 
 // Notes Editor
 function initNotesEditor() {
-    document.getElementById("createNewNoteBtn")?.addEventListener("click", () => {
-        if (state.isEditable) createNewNote();
-    });
-    document.getElementById("deleteCurrentNoteBtn")?.addEventListener("click", () => {
-        if (state.isEditable) deleteCurrentNote();
-    });
+    document.getElementById("createNewNoteBtn")?.addEventListener("click", createNewNote);
+    document.getElementById("deleteCurrentNoteBtn")?.addEventListener("click", deleteCurrentNote);
 
     const titleInput = document.getElementById("docTitleInput");
     const editorBody = document.getElementById("notionEditor");
 
     titleInput?.addEventListener("input", () => {
-        if (!state.isEditable || !state.activeNoteId) return;
+        if (!state.activeNoteId) return;
         const note = state.notes.find(n => n.id === state.activeNoteId);
         if (note) {
             note.title = titleInput.value;
@@ -528,7 +486,7 @@ function initNotesEditor() {
     });
 
     editorBody?.addEventListener("input", () => {
-        if (!state.isEditable || !state.activeNoteId) return;
+        if (!state.activeNoteId) return;
         const note = state.notes.find(n => n.id === state.activeNoteId);
         if (note) {
             note.content = editorBody.innerHTML;
@@ -539,7 +497,6 @@ function initNotesEditor() {
     // Toolbar Buttons
     document.querySelectorAll(".fmt-btn[data-cmd]").forEach(btn => {
         btn.addEventListener("click", () => {
-            if (!state.isEditable) return;
             const cmd = btn.getAttribute("data-cmd");
             const val = btn.getAttribute("data-val") || null;
             document.execCommand(cmd, false, val);
@@ -618,16 +575,15 @@ function renderToday() {
     const container = document.getElementById("todayChecklistContainer");
     if (!container) return;
 
-    const isEdit = state.isEditable;
     container.innerHTML = state.tasks.map(t => `
         <div class="checklist-item ${t.status === 'done' ? 'done' : ''}">
-            <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} ${isEdit ? '' : 'disabled'} onchange="toggleTaskDone('${t.id}')">
+            <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')">
             <div style="flex:1;">
                 <span style="font-weight:600; display:block;">${escapeHtml(t.title)}</span>
                 <span style="font-size:0.75rem; color:var(--text-dim);">${escapeHtml(t.desc || '')}</span>
             </div>
             <span class="card-tag priority-${t.priority}">${t.category}</span>
-            <button class="icon-btn-sm" onclick="openTaskModal('${t.id}')"><i class="fa-solid fa-${isEdit ? 'pen' : 'eye'}"></i></button>
+            <button class="icon-btn-sm" onclick="openTaskModal('${t.id}')"><i class="fa-solid fa-pen"></i></button>
         </div>
     `).join("");
 }
@@ -641,7 +597,6 @@ function toggleTaskDone(id) {
 }
 
 function deleteTask(id) {
-    if (!state.isEditable) return;
     if (confirm("Hapus plan ini?")) {
         state.tasks = state.tasks.filter(x => x.id !== id);
         saveState();
@@ -650,12 +605,8 @@ function deleteTask(id) {
 
 // Modals Handling
 function initModals() {
-    document.getElementById("quickCreateTaskBtn")?.addEventListener("click", () => {
-        if (state.isEditable) openTaskModal();
-    });
-    document.getElementById("addTodayTaskBtn")?.addEventListener("click", () => {
-        if (state.isEditable) openTaskModal();
-    });
+    document.getElementById("quickCreateTaskBtn")?.addEventListener("click", () => openTaskModal());
+    document.getElementById("addTodayTaskBtn")?.addEventListener("click", () => openTaskModal());
 
     document.querySelectorAll(".closeModalBtn").forEach(btn => {
         btn.addEventListener("click", closeModal);
@@ -663,7 +614,7 @@ function initModals() {
 
     document.getElementById("taskForm")?.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (state.isEditable) saveTaskFromModal();
+        saveTaskFromModal();
     });
 }
 
@@ -671,26 +622,10 @@ function openTaskModal(taskId = null, defaultCol = "todo") {
     const modal = document.getElementById("taskModal");
     modal.classList.add("active");
 
-    const isEdit = state.isEditable;
-    const fields = ["taskTitleInput", "taskCategorySelect", "taskPrioritySelect", "taskStatusSelect", "taskDueDateInput", "taskDescInput"];
-    fields.forEach(fid => {
-        const el = document.getElementById(fid);
-        if (el) {
-            if (isEdit) el.removeAttribute("disabled");
-            else el.setAttribute("disabled", "true");
-        }
-    });
-
-    const submitBtn = document.querySelector("#taskForm button[type='submit']");
-    if (submitBtn) {
-        if (isEdit) submitBtn.style.display = "block";
-        else submitBtn.style.display = "none";
-    }
-
     if (taskId) {
         const t = state.tasks.find(x => x.id === taskId);
         if (t) {
-            document.getElementById("modalTaskTitle").textContent = isEdit ? "Edit Plan" : "Rincian Plan";
+            document.getElementById("modalTaskTitle").textContent = "Edit Plan";
             document.getElementById("taskIdHidden").value = t.id;
             document.getElementById("taskTitleInput").value = t.title;
             document.getElementById("taskCategorySelect").value = t.category;
@@ -766,10 +701,6 @@ function initGlobalSearch() {
 // Export & Import Backup
 function initImportExport() {
     document.getElementById("exportDataBtn")?.addEventListener("click", () => {
-        if (!state.isEditable) {
-            alert("Harap login dengan akun handoyotriwahyu@gmail.com untuk menggunakan fitur ekspor data.");
-            return;
-        }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
         const a = document.createElement("a");
         a.setAttribute("href", dataStr);
@@ -780,13 +711,7 @@ function initImportExport() {
     });
 
     const fileInput = document.getElementById("importFileInput");
-    document.getElementById("importDataBtn")?.addEventListener("click", () => {
-        if (!state.isEditable) {
-            alert("Harap login dengan akun handoyotriwahyu@gmail.com untuk menggunakan fitur impor data.");
-            return;
-        }
-        fileInput.click();
-    });
+    document.getElementById("importDataBtn")?.addEventListener("click", () => fileInput.click());
 
     fileInput?.addEventListener("change", (e) => {
         const file = e.target.files[0];

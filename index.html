@@ -16,7 +16,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-    <div id="app" class="app-layout">
+
+    <!-- PRIVATE LOGIN GATE (LOCK SCREEN) -->
+    <div id="login-gate" class="login-gate-wrapper">
+        <div class="login-card glass-card">
+            <div class="login-icon-badge">🔒</div>
+            <h1 class="login-title">Wahyu's Plan</h1>
+            <p class="login-subtitle">Private Personal Workspace & Capstone Tracker</p>
+            
+            <div class="login-notice-box">
+                <i class="fa-solid fa-shield-halved text-purple"></i>
+                <span>Aplikasi ini diproteksi secara khusus. Silakan login menggunakan akun Google terverifikasi Kak Wahyu untuk membuka isi workspace.</span>
+            </div>
+
+            <div class="login-action-area">
+                <div id="g_id_onload"
+                     data-client_id="478950485906-8h4gqpgl5e05p2dch39j1ldp34pq1v29.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-theme="filled_dark" data-size="large" data-logo_alignment="left" id="googleSignInBtnGate"></div>
+            </div>
+
+            <div id="gate-error-alert" class="gate-error-alert hidden">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span id="gate-error-msg">Akses Ditolak: Hanya akun handoyotriwahyu@gmail.com yang diizinkan.</span>
+            </div>
+
+            <div class="login-footer">
+                <span>Tri Wahyu Handoyo (22518241023) • Technocorner & Capstone Workspace</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION WORKSPACE (Hidden by default until authenticated) -->
+    <div id="app" class="app-layout" style="display: none;">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -50,6 +84,10 @@
                     <button class="nav-item" data-view="today">
                         <i class="fa-solid fa-calendar-check"></i>
                         <span>Hari Ini</span>
+                    </button>
+                    <button class="nav-item" data-view="capstone">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>Capstone & Learning</span>
                     </button>
                 </div>
 
@@ -98,7 +136,7 @@
                         <span>Wahyu's Plan</span>
                         <i class="fa-solid fa-chevron-right"></i>
                         <span class="current-page-title" id="pageTitleHeading">Dashboard</span>
-                        <span id="lock-badge" class="badge-lock read-only"><i class="fa-solid fa-lock"></i> Mode Baca</span>
+                        <span id="lock-badge" class="badge-lock editable"><i class="fa-solid fa-unlock"></i> Workspace Terverifikasi</span>
                     </div>
                 </div>
                 <div class="topbar-right">
@@ -109,17 +147,11 @@
                     <button id="quickCreateTaskBtn" class="btn btn-primary">
                         <i class="fa-solid fa-plus"></i> <span>Buat Plan Baru</span>
                     </button>
-                    <!-- Google Sign In Area -->
-                    <div id="g_id_onload"
-                         data-client_id="478950485906-8h4gqpgl5e05p2dch39j1ldp34pq1v29.apps.googleusercontent.com"
-                         data-callback="handleCredentialResponse"
-                         data-auto_prompt="false">
-                    </div>
-                    <div class="g_id_signin" data-type="standard" data-theme="filled_dark" data-size="medium" data-logo_alignment="left" id="googleSignInBtn"></div>
-                    <div id="user-profile" class="user-profile hidden">
+                    
+                    <div id="user-profile" class="user-profile">
                         <img id="user-avatar" src="" alt="Avatar" title="User Avatar">
                         <span id="user-email" class="user-email-text"></span>
-                        <button id="btn-logout" class="icon-btn-sm" title="Log Out"><i class="fa-solid fa-sign-out-alt"></i></button>
+                        <button id="btn-logout" class="icon-btn-sm" title="Log Out / Kunci Workspace"><i class="fa-solid fa-right-from-bracket"></i></button>
                     </div>
                 </div>
             </header>
@@ -311,6 +343,106 @@
                         </div>
                         <div class="today-checklist-container" id="todayChecklistContainer">
                             <!-- Items -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 5: CAPSTONE & LEARNING TRACKER -->
+                <section class="view-panel" id="view-capstone">
+                    <div class="capstone-header-banner glass-card" style="padding: 1.75rem 2rem; margin-bottom: 1.5rem;">
+                        <div class="capstone-header-text">
+                            <h2><i class="fa-solid fa-brain text-purple"></i> Capstone & Learning Investment Tracker</h2>
+                            <p class="subtext">Rincian pengalaman belajar, penguasaan teknologi, alokasi jam kerja, dan milestone proyek Kak Wahyu.</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <!-- Skill & Tech Stack Matrix -->
+                        <div class="dash-widget glass-card">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-microchip text-orange"></i> Tech Stack & Learning Achievements</h3>
+                            </div>
+                            <div class="skill-matrix-list" style="display:flex; flex-direction:column; gap: 1.25rem;">
+                                <div class="skill-item">
+                                    <div class="skill-info" style="display:flex; justify-content:space-between; margin-bottom: 4px;">
+                                        <span class="skill-name" style="font-weight:600; font-size:0.9rem;">Embedded Robotics & Mikrokontroler (STM32, ESP32)</span>
+                                        <span class="skill-level" style="font-size:0.8rem; color:var(--primary); font-weight:700;">85%</span>
+                                    </div>
+                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 85%;"></div></div>
+                                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top: 4px;">Kinematika robot omni-directional, sensor IMU 9-axis, encoder high-resolution, driver MOSFET DC motor.</p>
+                                </div>
+
+                                <div class="skill-item">
+                                    <div class="skill-info" style="display:flex; justify-content:space-between; margin-bottom: 4px;">
+                                        <span class="skill-name" style="font-weight:600; font-size:0.9rem;">Automation, CDP Socket & Telemetry Bridge</span>
+                                        <span class="skill-level" style="font-size:0.8rem; color:var(--accent-blue); font-weight:700;">90%</span>
+                                    </div>
+                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 90%; background: linear-gradient(90deg, var(--accent-blue), var(--primary));"></div></div>
+                                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top: 4px;">Antigravity agentic CLI, raw WebSocket Chrome DevTools Protocol, mirror zero-delay Telegram Bot server.</p>
+                                </div>
+
+                                <div class="skill-item">
+                                    <div class="skill-info" style="display:flex; justify-content:space-between; margin-bottom: 4px;">
+                                        <span class="skill-name" style="font-weight:600; font-size:0.9rem;">Administrasi RPL & Manajemen Berkas PDF</span>
+                                        <span class="skill-level" style="font-size:0.8rem; color:var(--accent-green); font-weight:700;">100%</span>
+                                    </div>
+                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 100%; background: linear-gradient(90deg, var(--accent-green), #34d399);"></div></div>
+                                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top: 4px;">Organisasi DHS/KHS, ekuivalensi RPL UNTAN 2025, INESCO UMP 2025, PANCO FISIP UNY 2025 (4 file PDF &lt; 1MB).</p>
+                                </div>
+
+                                <div class="skill-item">
+                                    <div class="skill-info" style="display:flex; justify-content:space-between; margin-bottom: 4px;">
+                                        <span class="skill-name" style="font-weight:600; font-size:0.9rem;">Modern Web Architecture & Notion UI/UX</span>
+                                        <span class="skill-level" style="font-size:0.8rem; color:var(--accent-purple); font-weight:700;">80%</span>
+                                    </div>
+                                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 80%; background: linear-gradient(90deg, var(--accent-purple), var(--primary));"></div></div>
+                                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top: 4px;">Glassmorphism UI, Vanilla JavaScript ES6, Google Identity Services Auth Gate, LocalStorage Auto-Sync.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time Investment Breakdown -->
+                        <div class="dash-widget glass-card">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-clock text-blue"></i> Alokasi Waktu & Investasi Jam Kerja</h3>
+                            </div>
+                            <div class="time-investment-list" style="display:flex; flex-direction:column; gap: 1rem;">
+                                <div class="stat-card" style="width: 100%; border-left: 3px solid var(--accent-purple);">
+                                    <div class="stat-icon purple"><i class="fa-solid fa-robot"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-val" style="font-size:1.1rem;">⏱️ 120 Jam</span>
+                                        <span class="stat-label" style="font-weight:600; color:var(--text-main);">Robot Transporter Technocorner 2026</span>
+                                        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">Testing kinematika sensor, motor driver, & perakitan fisik robot.</p>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card" style="width: 100%; border-left: 3px solid var(--accent-orange);">
+                                    <div class="stat-icon orange"><i class="fa-solid fa-file-pdf"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-val" style="font-size:1.1rem;">⏱️ 45 Jam</span>
+                                        <span class="stat-label" style="font-weight:600; color:var(--text-main);">Penyusunan Berkas Ekuivalensi RPL Prestasi</span>
+                                        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">Konversi nilai UNTAN, INESCO, PANCO, & kompresi 4 PDF di bawah 1MB.</p>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card" style="width: 100%; border-left: 3px solid var(--accent-green);">
+                                    <div class="stat-icon green"><i class="fa-solid fa-book"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-val" style="font-size:1.1rem;">⏱️ 80 Jam</span>
+                                        <span class="stat-label" style="font-weight:600; color:var(--text-main);">Penulisan Skripsi & Metodologi Penelitian</span>
+                                        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">Penyusunan Bab I s.d. V, riset literatur, dan pengolahan data pengujian.</p>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card" style="width: 100%; border-left: 3px solid var(--accent-blue);">
+                                    <div class="stat-icon blue"><i class="fa-solid fa-code"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-val" style="font-size:1.1rem;">⏱️ 35 Jam</span>
+                                        <span class="stat-label" style="font-weight:600; color:var(--text-main);">Web Wahyu's Plan & Telemetry Infrastructure</span>
+                                        <p style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">Pengembangan web Notion-style, auth gate Google, & Telegram mirror bot.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
