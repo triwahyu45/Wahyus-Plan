@@ -6,8 +6,26 @@ const STORAGE_KEY_TASKS = "wahyu_plan_tasks_v1";
 const STORAGE_KEY_NOTES = "wahyu_plan_notes_v1";
 const STORAGE_KEY_THEME = "wahyu_plan_theme_v1";
 
-// Default Starter Data (Technocorner 2026, Robotics, Personal Plans)
+// Default Starter Data (Laporan PK, Konversi SKS, Technocorner 2026, Robotics)
 const DEFAULT_TASKS = [
+    {
+        id: "task_pk_1",
+        title: "Menyelesaikan Laporan PK (Praktik Kerja)",
+        category: "Akademik",
+        priority: "high",
+        status: "inprogress",
+        dueDate: "2026-07-31",
+        desc: "Penyusunan bab laporan PK, dokumentasi kegiatan industri, dan revisi dosen pembimbing."
+    },
+    {
+        id: "task_pk_2",
+        title: "Pengurusan Konversi Matakuliah & SKS PK",
+        category: "Akademik",
+        priority: "medium",
+        status: "todo",
+        dueDate: "2026-08-10",
+        desc: "Pengajuan berkas konversi nilai, pengakuan SKS kegiatan PK, dan administrasi jurusan."
+    },
     {
         id: "task_1",
         title: "Testing Kinematics Sensor Robot Omni Technocorner 2026",
@@ -47,6 +65,30 @@ const DEFAULT_TASKS = [
 ];
 
 const DEFAULT_NOTES = [
+    {
+        id: "note_pk",
+        icon: "📄",
+        title: "Draft & Checklist Laporan PK & Konversi SKS",
+        content: `<h1>Target Penyelesaian Laporan PK & Konversi SKS</h1>
+<p>Dokumen kerja harian untuk penyusunan laporan Praktik Kerja (PK) dan pengurusan konversi SKS akademik Kak Wahyu.</p>
+<blockquote>Fokus Utama: Selesaikan Laporan PK -> Bimbingan -> Pengajuan Konversi SKS</blockquote>
+
+<h2>1. Checklist Laporan PK (Praktik Kerja)</h2>
+<ul>
+  <li>[x] Pendahuluan & Latar Belakang PK</li>
+  <li>[x] Profil Tempat PK & Struktur Organisasi</li>
+  <li>[/] Pembahasan Kegiatan & Hasil Implementasi Teknik</li>
+  <li>[ ] Kesimpulan & Saran Laporan</li>
+  <li>[ ] Lembar Pengesahan Dosen Pembimbing & Lapangan</li>
+</ul>
+
+<h2>2. Checklist Konversi Matakuliah & SKS</h2>
+<ul>
+  <li>[ ] Penyiapan Transkrip Nilai & Form Pengajuan Konversi</li>
+  <li>[ ] Pemetaan Matakuliah PK yang Terkonversi</li>
+  <li>[ ] Penyerahan Berkas ke Koordinator Akademik Jurusan</li>
+</ul>`
+    },
     {
         id: "note_1",
         icon: "🤖",
