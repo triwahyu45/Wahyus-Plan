@@ -974,3 +974,209 @@ body {
     gap: 0.75rem;
     margin-top: 1.5rem;
 }
+
+/* ==========================================================================
+   Google Auth & Lock Badge Styles
+   ========================================================================== */
+.badge-lock {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+}
+
+.badge-lock.read-only {
+    background: rgba(249, 115, 22, 0.1);
+    color: var(--accent-orange);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.badge-lock.editable {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-green);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+.topbar-right .user-profile {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-glass);
+    border-radius: 50px;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-right .user-profile img {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--primary);
+}
+
+.user-email-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   Mobile Toggles & Utilities
+   ========================================================================== */
+.mobile-only {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Mobile Screen Adaptation (@media)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .mobile-only {
+        display: flex !important;
+    }
+    
+    .app-layout {
+        position: relative;
+    }
+    
+    /* Sidebar slide-out on Mobile */
+    .sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: var(--sidebar-width);
+        transform: translateX(-100%);
+        transition: var(--transition-smooth);
+        z-index: 1000;
+        box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6);
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    /* Topbar compact fitting */
+    .topbar {
+        padding: 0 1rem;
+        gap: 0.5rem;
+    }
+    
+    .topbar-right .search-box input {
+        width: 110px;
+    }
+    
+    .topbar-right .search-box input:focus {
+        width: 140px;
+    }
+    
+    .topbar-right .btn span {
+        display: none; /* Hide button text on small screens */
+    }
+    
+    .topbar-right .user-email-text {
+        display: none; /* Hide email text */
+    }
+    
+    .badge-lock {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        margin-left: 6px;
+    }
+    
+    .breadcrumb span:not(.current-page-title) {
+        display: none; /* Hide parent breadcrumbs */
+    }
+    .breadcrumb i {
+        display: none;
+    }
+    
+    /* Body & Dashboard widgets */
+    .content-body {
+        padding: 1rem;
+    }
+    
+    .hero-banner {
+        padding: 1.5rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .hero-stats {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        flex: 1 1 120px;
+        min-width: 120px;
+        padding: 0.75rem 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Swipeable horizontal columns on Kanban */
+    .kanban-board {
+        display: flex;
+        overflow-x: auto;
+        gap: 1rem;
+        height: calc(100vh - 200px);
+        scroll-snap-type: x mandatory;
+        padding-bottom: 1rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .kanban-col {
+        min-width: 290px;
+        max-width: 290px;
+        scroll-snap-align: start;
+        height: 100%;
+    }
+    
+    /* Responsive Notes & Docs */
+    .notes-layout {
+        grid-template-columns: 1fr;
+        height: calc(100vh - 140px);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .notes-sidebar {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .notes-sidebar.hidden-mobile {
+        display: none !important;
+    }
+    
+    .notes-editor-container {
+        display: none;
+        width: 100%;
+        height: 100%;
+        padding: 1.5rem 1.25rem;
+    }
+    
+    .notes-editor-container.active-mobile {
+        display: flex !important;
+    }
+    
+    .doc-title-input {
+        font-size: 1.5rem;
+    }
+}
+

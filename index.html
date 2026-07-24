@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
@@ -96,6 +98,7 @@
                         <span>Wahyu's Plan</span>
                         <i class="fa-solid fa-chevron-right"></i>
                         <span class="current-page-title" id="pageTitleHeading">Dashboard</span>
+                        <span id="lock-badge" class="badge-lock read-only"><i class="fa-solid fa-lock"></i> Mode Baca</span>
                     </div>
                 </div>
                 <div class="topbar-right">
@@ -106,6 +109,18 @@
                     <button id="quickCreateTaskBtn" class="btn btn-primary">
                         <i class="fa-solid fa-plus"></i> <span>Buat Plan Baru</span>
                     </button>
+                    <!-- Google Sign In Area -->
+                    <div id="g_id_onload"
+                         data-client_id="478950485906-8h4gqpgl5e05p2dch39j1ldp34pq1v29.apps.googleusercontent.com"
+                         data-callback="handleCredentialResponse"
+                         data-auto_prompt="false">
+                    </div>
+                    <div class="g_id_signin" data-type="standard" data-theme="filled_dark" data-size="medium" data-logo_alignment="left" id="googleSignInBtn"></div>
+                    <div id="user-profile" class="user-profile hidden">
+                        <img id="user-avatar" src="" alt="Avatar" title="User Avatar">
+                        <span id="user-email" class="user-email-text"></span>
+                        <button id="btn-logout" class="icon-btn-sm" title="Log Out"><i class="fa-solid fa-sign-out-alt"></i></button>
+                    </div>
                 </div>
             </header>
 
@@ -245,7 +260,7 @@
                 <!-- VIEW 3: NOTES & DOCUMENTS (NOTION STYLE) -->
                 <section class="view-panel" id="view-notes">
                     <div class="notes-layout">
-                        <div class="notes-sidebar glass-card">
+                        <div class="notes-sidebar glass-card" id="notesSidebar">
                             <div class="notes-sidebar-header">
                                 <h3><i class="fa-solid fa-folder-open"></i> Daftar Dokumen</h3>
                                 <button id="createNewNoteBtn" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Dokumen</button>
@@ -257,6 +272,9 @@
 
                         <div class="notes-editor-container glass-card" id="editorContainer">
                             <div class="editor-header">
+                                <button id="mobileBackToNotesListBtn" class="icon-btn-ghost mobile-only" title="Kembali ke Daftar" style="margin-right: 8px;">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </button>
                                 <div class="doc-icon-picker" id="docIconPicker">📝</div>
                                 <input type="text" id="docTitleInput" class="doc-title-input" placeholder="Judul Dokumen...">
                             </div>

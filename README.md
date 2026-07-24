@@ -1,39 +1,54 @@
 # 🚀 Wahyu's Plan — Personal Workspace & Notion-Style Productivity App
 
-**Wahyu's Plan** adalah web application modern ala Notion yang didesain khusus untuk mengelola projek robotika (Technocorner 2026, STM32, Kinematics), tugas harian, dan dokumen catatan penting Kak Wahyu.
+**Wahyu's Plan** adalah web application modern ala Notion yang didesain khusus untuk mengelola projek robotika (Technocorner 2026, STM32, Kinematics), tugas harian, prestasi lomba, dan ekuivalensi RPL (Rekognisi Pembelajaran Lampau) akademik Kak Wahyu.
 
 ---
 
 ## ✨ Fitur Utama
 
-- 📋 **Kanban Board Plan** — Atur tugas dengan status *Akan Dikerjakan*, *Sedang Dikerjakan*, *Review & Testing*, dan *Selesai*.
-- 📝 **Notion-Style Document Editor** — Editor dokumen rich text dengan formatting (H1, H2, Bold, Italic, Quotes, Bulleted List, Emoji Icon).
-- ⚡ **Target & Focus Hari Ini** — Checklist harian dengan progress bar otomatis.
-- 🎨 **Glassmorphism Dark & Light Theme** — Desain visual premium ala Notion dengan tema gelap/terang.
-- 💾 **Auto-Save LocalStorage & Export/Import** — Data tersimpan otomatis di browser dan dapat di-export/import sebagai backup JSON.
-- 📱 **Fully Responsive** — Tampilan optimal di PC desktop maupun Telegram / Mobile browser.
+- 🔒 **Google OAuth Security & Lock System** — Membatasi hak edit, tambah, dan hapus data secara aman. Hanya pemilik akun Google **`handoyotriwahyu@gmail.com`** yang dapat beralih ke **Mode Edit**. Pengunjung publik otomatis berada dalam **Mode Baca (Read-only)**.
+- 📋 **Kanban Board Plan** — Pengaturan status tugas (*Akan Dikerjakan*, *Sedang Dikerjakan*, *Review & Testing*, *Selesai*) secara modular.
+- 📝 **Notion-Style Document Editor** — Editor catatan rich-text terintegrasi dengan kustomisasi ikon emoji, judul dokumen, quotes, format heading (H1, H2, H3), list, serta auto-save.
+- ⚡ **Target & Focus Hari Ini** — Dashboard pemantauan target harian yang dilengkapi dengan widget checklist dan progress bar dinamis.
+- 📱 **Mobile Optimized** — Antarmuka responsif untuk perangkat seluler / browser Telegram dengan navigasi sidebar geser (slide-in) dan Kanban horizontal swipe.
+- 💾 **Auto-Save LocalStorage & Backup** — Data tersimpan otomatis di web storage browser lokal Anda. Dilengkapi fitur ekspor/impor cadangan data berformat JSON.
+
+---
+
+## ⚙️ Cara Mengubah Google Client ID (Jika Diperlukan)
+
+Aplikasi ini menggunakan **Google Identity Services API** untuk integrasi tombol Sign In. Client ID bawaan dikonfigurasi untuk pengujian lokal dan domain GitHub Pages. Jika Anda ingin memindahkan aplikasi ini ke domain/hosting lain, Anda perlu mengupdate Client ID:
+
+1. Buka file [index.html](file:///index.html)
+2. Cari bagian kode berikut pada baris topbar:
+   ```html
+   data-client_id="478950485906-8h4gqpgl5e05p2dch39j1ldp34pq1v29.apps.googleusercontent.com"
+   ```
+3. Ganti dengan Client ID milik Anda sendiri yang didapatkan dari [Google Cloud Console (Credentials)](https://console.cloud.google.com/).
+4. Pastikan untuk mendaftarkan URL hosting baru Anda pada daftar **Authorized JavaScript origins** di Google Cloud Console.
 
 ---
 
 ## 🌐 Cara Deploy ke GitHub Pages
 
-1. Pastikan repositori ini di-push ke GitHub:
+1. Pastikan repositori ini sudah di-push ke GitHub:
    ```bash
    git add .
-   git commit -m "Initial commit - Wahyu's Plan Notion Web App v1.0"
+   git commit -m "Update Wahyu's Plan - Google Auth security and mobile friendly"
    git branch -M main
    git remote add origin https://github.com/triwahyu45/Wahyus-Plan.git
    git push -u origin main
    ```
 
-2. Di repositori GitHub `triwahyu45/Wahyus-Plan`:
-   - Buka **Settings** -> **Pages**
-   - Di bagian **Source**, pilih **`Deploy from a branch`** -> Branch: **`main`** / `/ (root)`
+2. Di halaman repositori GitHub `triwahyu45/Wahyus-Plan`:
+   - Buka menu **Settings** -> **Pages**
+   - Di bawah bagian **Build and deployment**, pada opsi **Source**, pilih **`Deploy from a branch`**
+   - Atur Branch ke: **`main`** / `/ (root)`
    - Klik **Save**.
 
-3. Website akan langsung aktif di:
+3. Website Anda akan online dalam beberapa menit di:
    👉 **`https://triwahyu45.github.io/Wahyus-Plan`**
 
 ---
 
-*Dibuat khusus untuk Kak Wahyu | Powered by Antigravity AI*
+*Didesain secara khusus untuk Kak Wahyu | Didukung oleh Antigravity AI*
