@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wahyu's Plan — Personal Workspace & Productivity</title>
+    <meta name="description" content="Wahyu's Plan - Workspace planning modern ala Notion untuk tugas, projek, dan catatan harian.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div id="app" class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="avatar">⚡</div>
+                    <div class="user-info">
+                        <h2 class="workspace-title">Wahyu's Plan</h2>
+                        <span class="user-role">Personal Workspace</span>
+                    </div>
+                </div>
+                <button id="toggleSidebarBtn" class="icon-btn-ghost" title="Minimize Sidebar">
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">UTAMA</span>
+                    <button class="nav-item active" data-view="dashboard">
+                        <i class="fa-solid fa-border-all"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="nav-item" data-view="kanban">
+                        <i class="fa-solid fa-table-columns"></i>
+                        <span>Kanban Board</span>
+                    </button>
+                    <button class="nav-item" data-view="notes">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span>Notes & Docs</span>
+                    </button>
+                    <button class="nav-item" data-view="today">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Hari Ini</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <div class="section-header-flex">
+                        <span class="nav-section-title">PROJEK & TUGAS</span>
+                        <button id="addFolderBtn" class="small-add-btn" title="Tambah Projek"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div id="projectListNav" class="project-nav-list">
+                        <!-- Dynamic Project Items -->
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="storage-indicator">
+                    <div class="storage-text">
+                        <span>Auto-Save Status</span>
+                        <span class="badge-status online"><i class="fa-solid fa-cloud"></i> Tersimpan</span>
+                    </div>
+                </div>
+                <div class="footer-actions">
+                    <button id="themeToggleBtn" class="icon-btn" title="Ganti Tema">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <button id="exportDataBtn" class="icon-btn" title="Export Backup">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <button id="importDataBtn" class="icon-btn" title="Import Data">
+                        <i class="fa-solid fa-upload"></i>
+                    </button>
+                    <input type="file" id="importFileInput" accept=".json" style="display:none">
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-wrapper">
+            <!-- Top Navbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="mobileSidebarToggle" class="icon-btn-ghost mobile-only">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="breadcrumb" id="breadcrumb">
+                        <span>Wahyu's Plan</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <span class="current-page-title" id="pageTitleHeading">Dashboard</span>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="globalSearchInput" placeholder="Cari tugas, catatan, projek...">
+                    </div>
+                    <button id="quickCreateTaskBtn" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i> <span>Buat Plan Baru</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="content-body" id="contentBody">
+                
+                <!-- VIEW 1: DASHBOARD -->
+                <section class="view-panel active" id="view-dashboard">
+                    <div class="hero-banner">
+                        <div class="hero-text">
+                            <h1 class="welcome-heading">Selamat Datang, Kak Wahyu! 👋</h1>
+                            <p class="hero-subtitle">Ruang kerja Notion-style milikmu. Atur target, projek Technocorner 2026, dan catatan harian secara rapi.</p>
+                        </div>
+                        <div class="hero-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon purple"><i class="fa-solid fa-list-check"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-val" id="statTotalTasks">0</span>
+                                    <span class="stat-label">Total Plan</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-val" id="statDoneTasks">0</span>
+                                    <span class="stat-label">Selesai</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon orange"><i class="fa-solid fa-spinner"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-val" id="statInProgressTasks">0</span>
+                                    <span class="stat-label">Berjalan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <!-- Quick Today Tasks -->
+                        <div class="dash-widget glass-card">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-fire text-orange"></i> Target Fokus Hari Ini</h3>
+                                <button class="text-link" id="navToTodayBtn">Lihat Semua</button>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="todayProgressBar" style="width: 0%;"></div>
+                            </div>
+                            <ul class="task-checklist" id="dashTodayChecklist">
+                                <!-- Dynamic items -->
+                            </ul>
+                        </div>
+
+                        <!-- Recent Notes / Docs -->
+                        <div class="dash-widget glass-card">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-note-sticky text-blue"></i> Catatan & Ide Terkini</h3>
+                                <button class="text-link" id="navToNotesBtn">Buka Docs</button>
+                            </div>
+                            <div class="recent-notes-list" id="dashRecentNotesList">
+                                <!-- Dynamic Notes Card -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: KANBAN BOARD -->
+                <section class="view-panel" id="view-kanban">
+                    <div class="kanban-controls">
+                        <div class="filter-group">
+                            <span class="filter-label">Filter Tags:</span>
+                            <div class="tag-chips" id="kanbanTagFilter">
+                                <button class="chip-btn active" data-tag="all">Semua</button>
+                                <button class="chip-btn" data-tag="Technocorner">Technocorner</button>
+                                <button class="chip-btn" data-tag="Robotics">Robotics</button>
+                                <button class="chip-btn" data-tag="Personal">Personal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-board" id="kanbanBoard">
+                        <!-- Column 1: Backlog / To Do -->
+                        <div class="kanban-col" data-col-id="todo">
+                            <div class="col-header">
+                                <div class="col-title-group">
+                                    <span class="col-dot gray"></span>
+                                    <h4>Akan Dikerjakan</h4>
+                                    <span class="col-count" id="count-todo">0</span>
+                                </div>
+                                <button class="icon-btn-sm add-card-col-btn" data-col="todo" title="Tambah Tugas"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div class="kanban-cards-container" id="col-todo-container"></div>
+                        </div>
+
+                        <!-- Column 2: In Progress -->
+                        <div class="kanban-col" data-col-id="inprogress">
+                            <div class="col-header">
+                                <div class="col-title-group">
+                                    <span class="col-dot blue"></span>
+                                    <h4>Sedang Dikerjakan</h4>
+                                    <span class="col-count" id="count-inprogress">0</span>
+                                </div>
+                                <button class="icon-btn-sm add-card-col-btn" data-col="inprogress" title="Tambah Tugas"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div class="kanban-cards-container" id="col-inprogress-container"></div>
+                        </div>
+
+                        <!-- Column 3: Review / Testing -->
+                        <div class="kanban-col" data-col-id="review">
+                            <div class="col-header">
+                                <div class="col-title-group">
+                                    <span class="col-dot orange"></span>
+                                    <h4>Review & Testing</h4>
+                                    <span class="col-count" id="count-review">0</span>
+                                </div>
+                                <button class="icon-btn-sm add-card-col-btn" data-col="review" title="Tambah Tugas"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div class="kanban-cards-container" id="col-review-container"></div>
+                        </div>
+
+                        <!-- Column 4: Completed -->
+                        <div class="kanban-col" data-col-id="done">
+                            <div class="col-header">
+                                <div class="col-title-group">
+                                    <span class="col-dot green"></span>
+                                    <h4>Selesai</h4>
+                                    <span class="col-count" id="count-done">0</span>
+                                </div>
+                                <button class="icon-btn-sm add-card-col-btn" data-col="done" title="Tambah Tugas"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div class="kanban-cards-container" id="col-done-container"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: NOTES & DOCUMENTS (NOTION STYLE) -->
+                <section class="view-panel" id="view-notes">
+                    <div class="notes-layout">
+                        <div class="notes-sidebar glass-card">
+                            <div class="notes-sidebar-header">
+                                <h3><i class="fa-solid fa-folder-open"></i> Daftar Dokumen</h3>
+                                <button id="createNewNoteBtn" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Dokumen</button>
+                            </div>
+                            <div class="notes-list" id="notesListContainer">
+                                <!-- Dynamic Document List -->
+                            </div>
+                        </div>
+
+                        <div class="notes-editor-container glass-card" id="editorContainer">
+                            <div class="editor-header">
+                                <div class="doc-icon-picker" id="docIconPicker">📝</div>
+                                <input type="text" id="docTitleInput" class="doc-title-input" placeholder="Judul Dokumen...">
+                            </div>
+                            <div class="editor-toolbar">
+                                <button class="fmt-btn" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                                <button class="fmt-btn" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                                <button class="fmt-btn" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                                <div class="toolbar-divider"></div>
+                                <button class="fmt-btn" data-cmd="formatBlock" data-val="h1" title="Heading 1">H1</button>
+                                <button class="fmt-btn" data-cmd="formatBlock" data-val="h2" title="Heading 2">H2</button>
+                                <button class="fmt-btn" data-cmd="formatBlock" data-val="h3" title="Heading 3">H3</button>
+                                <div class="toolbar-divider"></div>
+                                <button class="fmt-btn" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
+                                <button class="fmt-btn" data-cmd="insertOrderedList" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+                                <button class="fmt-btn" data-cmd="formatBlock" data-val="blockquote" title="Quote"><i class="fa-solid fa-quote-right"></i></button>
+                                <div class="toolbar-divider"></div>
+                                <button id="deleteCurrentNoteBtn" class="btn btn-sm btn-danger-ghost"><i class="fa-solid fa-trash"></i> Hapus</button>
+                            </div>
+                            <div id="notionEditor" class="notion-editor-body" contenteditable="true" placeholder="Ketik sesuatu di sini... (Support Rich Formatting)">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: HARI INI (CHECKLIST & TIMELINE) -->
+                <section class="view-panel" id="view-today">
+                    <div class="today-panel-wrapper glass-card">
+                        <div class="panel-header-flex">
+                            <div>
+                                <h2><i class="fa-solid fa-calendar-day text-purple"></i> Plan & Checklist Hari Ini</h2>
+                                <p class="subtext">Fokus pada apa yang harus diselesaikan hari ini.</p>
+                            </div>
+                            <button id="addTodayTaskBtn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Task Hari Ini</button>
+                        </div>
+                        <div class="today-checklist-container" id="todayChecklistContainer">
+                            <!-- Items -->
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL TASK CREATOR / EDITOR -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3 id="modalTaskTitle">Buat Plan Baru</h3>
+                <button class="icon-btn-ghost closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskIdHidden">
+                <div class="form-group">
+                    <label for="taskTitleInput">Judul Plan / Tugas</label>
+                    <input type="text" id="taskTitleInput" placeholder="Contoh: Testing sensor robot omni Technocorner 2026..." required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskCategorySelect">Kategori / Projek</label>
+                        <select id="taskCategorySelect">
+                            <option value="Technocorner">Technocorner 2026</option>
+                            <option value="Robotics">Robotics & STM32</option>
+                            <option value="Personal">Personal & Study</option>
+                            <option value="General">Umum</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPrioritySelect">Prioritas</label>
+                        <select id="taskPrioritySelect">
+                            <option value="high">🔴 Tinggi (High)</option>
+                            <option value="medium" selected>🟡 Sedang (Medium)</option>
+                            <option value="low">🟢 Rendah (Low)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskStatusSelect">Status Board</label>
+                        <select id="taskStatusSelect">
+                            <option value="todo">Akan Dikerjakan</option>
+                            <option value="inprogress">Sedang Dikerjakan</option>
+                            <option value="review">Review & Testing</option>
+                            <option value="done">Selesai</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDateInput">Target Tanggal Selesai</label>
+                        <input type="date" id="taskDueDateInput">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="taskDescInput">Detail / Catatan Tambahan</label>
+                    <textarea id="taskDescInput" rows="3" placeholder="Tambahkan rincian plan atau langkah kerja..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost closeModalBtn">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
