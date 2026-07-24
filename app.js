@@ -223,6 +223,14 @@ function initAuth() {
     }
 
     document.getElementById("btn-logout")?.addEventListener("click", handleLogout);
+    
+    // Direct Login Fallback Button for Kak Wahyu
+    document.getElementById("directLoginBtn")?.addEventListener("click", () => {
+        currentUserEmail = TARGET_EMAIL;
+        sessionStorage.setItem(STORAGE_KEY_AUTH, TARGET_EMAIL);
+        localStorage.setItem(STORAGE_KEY_AUTH, TARGET_EMAIL);
+        showAppWorkspace(TARGET_EMAIL);
+    });
 }
 
 function showLoginGate(errorMsg = null) {

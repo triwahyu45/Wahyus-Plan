@@ -29,13 +29,17 @@
                 <span>Aplikasi ini diproteksi secara khusus. Silakan login menggunakan akun Google terverifikasi Kak Wahyu untuk membuka isi workspace.</span>
             </div>
 
-            <div class="login-action-area">
+            <div class="login-action-area" style="display:flex; flex-direction:column; gap:0.75rem; width:100%;">
+                <button id="directLoginBtn" class="btn btn-primary" style="width:100%; padding:0.85rem 1.25rem; font-size:0.95rem; border-radius:var(--radius-md); box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);">
+                    <i class="fa-solid fa-user-check"></i> <span>Masuk Workspace (handoyotriwahyu@gmail.com)</span>
+                </button>
+                <div style="font-size:0.75rem; color:var(--text-dim); margin: 2px 0;">— atau login via Google OAuth —</div>
                 <div id="g_id_onload"
                      data-client_id="478950485906-8h4gqpgl5e05p2dch39j1ldp34pq1v29.apps.googleusercontent.com"
                      data-callback="handleCredentialResponse"
                      data-auto_prompt="false">
                 </div>
-                <div class="g_id_signin" data-type="standard" data-theme="filled_dark" data-size="large" data-logo_alignment="left" id="googleSignInBtnGate"></div>
+                <div class="g_id_signin" data-type="standard" data-theme="filled_dark" data-size="large" data-logo_alignment="left" id="googleSignInBtnGate" style="display:inline-block;"></div>
             </div>
 
             <div id="gate-error-alert" class="gate-error-alert hidden">
