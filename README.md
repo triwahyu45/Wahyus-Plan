@@ -22,7 +22,7 @@ Aplikasi ini menggunakan **Google Identity Services API** untuk integrasi tombol
 1. Buka file [index.html](file:///index.html)
 2. Cari bagian kode berikut pada baris topbar:
    ```html
-   data-client_id="478950485906-8h4gqpgl5e05p2dch39j1ldp34pq1v29.apps.googleusercontent.com"
+   data-client_id="1014243862700-jhkpv6ecug2n6925ajs59s48e5ubeo3f.apps.googleusercontent.com"
    ```
 3. Ganti dengan Client ID milik Anda sendiri yang didapatkan dari [Google Cloud Console (Credentials)](https://console.cloud.google.com/).
 4. Pastikan untuk mendaftarkan URL hosting baru Anda pada daftar **Authorized JavaScript origins** di Google Cloud Console.
